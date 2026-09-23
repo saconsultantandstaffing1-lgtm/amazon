@@ -268,6 +268,51 @@
       </div>
     </header>
 
+    <!-- SECTION 0: SUPABASE CLOUD DATABASE SYNC -->
+    <div class="admin-card" id="supabaseCard" style="border-left: 4px solid #10B981; background: #FAFDFB;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 8px;">
+        <div class="card-title" style="margin-bottom: 0;">
+          ⚡ Supabase Cloud Database Sync
+        </div>
+        <span id="supabaseStatusBadge" style="background: #E2E8F0; color: #475569; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 700;">
+          ⚪ Not Connected (Using Local Storage)
+        </span>
+      </div>
+      <p class="card-desc">
+        Connect your Supabase database so edits to referral links and products update <strong>instantly across all live website visitors</strong> on phones, tablets, and desktops.
+      </p>
+
+      <div class="form-row" style="margin-bottom: 14px;">
+        <div>
+          <label for="supabaseUrlInput">Supabase Project URL</label>
+          <input type="url" id="supabaseUrlInput" placeholder="https://your-project-id.supabase.co">
+        </div>
+        <div>
+          <label for="supabaseKeyInput">Supabase Anon Public Key</label>
+          <input type="password" id="supabaseKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <button type="button" class="btn btn-primary" id="saveSupabaseBtn">
+          🔗 Connect Database
+        </button>
+        <button type="button" class="btn btn-outline" id="syncToCloudBtn" style="color: #047857; border-color: #A7F3D0;">
+          🚀 Push All Deals to Cloud
+        </button>
+        <button type="button" class="btn btn-outline" id="pullFromCloudBtn">
+          📥 Pull Deals from Cloud
+        </button>
+      </div>
+
+      <div style="margin-top: 14px; font-size: 0.82rem; color: var(--text-muted); background: #F1F5F9; padding: 10px 14px; border-radius: 8px; line-height: 1.5;">
+        💡 <strong>Quick Setup:</strong> 
+        1. Open <a href="https://supabase.com/dashboard" target="_blank" rel="noopener" style="color:var(--brand-primary); font-weight:600;">supabase.com/dashboard</a>.
+        2. Go to <strong>SQL Editor</strong> and run the contents of <code>supabase-schema.sql</code>.
+        3. Copy your <strong>Project URL</strong> and <strong>Anon Key</strong> from <em>Project Settings → API</em>, paste above, and click <strong>Connect</strong>!
+      </div>
+    </div>
+
     <!-- SECTION 1: GLOBAL AMAZON TAG -->
     <div class="admin-card">
       <div class="card-title">🏷️ Amazon Associates Tracking Tag</div>
@@ -377,10 +422,37 @@
   <div class="toast" id="toast">✅ Saved! Live website updated instantly.</div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
   <script src="affiliate-config.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const baseConfig = window.AFFILIATE_CONFIG || { products: [] };
+
+      // Supabase Elements
+      const urlInput = document.getElementById('supabaseUrlInput');
+      const keyInput = document.getElementById('supabaseKeyInput');
+      const statusBadge = document.getElementById('supabaseStatusBadge');
+      const saveSupabaseBtn = document.getElementById('saveSupabaseBtn');
+      const syncToCloudBtn = document.getElementById('syncToCloudBtn');
+      const pullFromCloudBtn = document.getElementById('pullFromCloudBtn');
+
+      function updateSupabaseUI() {
+        if (!window.DealNestDB) return;
+        const cfg = window.DealNestDB.getActiveConfig();
+        if (cfg.url) urlInput.value = cfg.url;
+        if (cfg.anonKey) keyInput.value = cfg.anonKey;
+
+        if (window.DealNestDB.isConfigured()) {
+          statusBadge.textContent = '🟢 Connected to Supabase Cloud';
+          statusBadge.style.background = '#D1FAE5';
+          statusBadge.style.color = '#065F46';
+        } else {
+          statusBadge.textContent = '⚪ Not Connected (Using Local Storage)';
+          statusBadge.style.background = '#E2E8F0';
+          statusBadge.style.color = '#475569';
+        }
+      }
 
       function getStorageData() {
         try {
@@ -404,15 +476,98 @@
         const toast = document.getElementById('toast');
         toast.textContent = msg;
         toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 2600);
+        setTimeout(() => { toast.style.display = 'none'; }, 2800);
       }
 
-      function persist() {
+      async function persist() {
         adminData.amazonTag = tagInput.value.trim();
         adminData.products = products;
         localStorage.setItem('blockbuster_admin_data', JSON.stringify(adminData));
-        showToast();
+
+        if (window.DealNestDB && window.DealNestDB.isConfigured()) {
+          showToast('⏳ Syncing to Supabase Cloud...');
+          const res = await window.DealNestDB.syncAllDeals(products, adminData.amazonTag);
+          if (res.success) {
+            showToast('✅ Saved & Synced to Cloud! Live for all visitors.');
+          } else {
+            showToast('⚠️ Saved locally, but cloud sync failed: ' + (res.error || 'Check keys'));
+          }
+        } else {
+          showToast('✅ Saved locally. (Connect Supabase above for cloud sync)');
+        }
       }
+
+      // Wire Supabase Buttons
+      saveSupabaseBtn.addEventListener('click', async () => {
+        const url = urlInput.value.trim();
+        const key = keyInput.value.trim();
+        if (!url || !key) {
+          alert('Please enter both your Supabase Project URL and Anon Key.');
+          return;
+        }
+
+        window.DealNestDB.saveCredentials(url, key);
+        showToast('Testing Supabase connection...');
+        const settings = await window.DealNestDB.fetchSettings();
+
+        if (settings !== null) {
+          updateSupabaseUI();
+          showToast('🎉 Supabase connected successfully!');
+          // Check if cloud already has deals
+          const cloudDeals = await window.DealNestDB.fetchDeals();
+          if (cloudDeals && cloudDeals.length > 0) {
+            if (confirm(`Supabase has ${cloudDeals.length} deals in the cloud. Do you want to load them into this admin view?`)) {
+              products = cloudDeals;
+              renderDealsList();
+            }
+          } else {
+            // Offer to seed
+            if (confirm('Connected to empty Supabase tables. Would you like to upload your current deals to the cloud now?')) {
+              syncToCloudBtn.click();
+            }
+          }
+        } else {
+          alert('Could not connect to Supabase. Please verify:\n1. Your URL & Anon key are correct.\n2. You ran the SQL script in Supabase SQL editor.');
+          updateSupabaseUI();
+        }
+      });
+
+      syncToCloudBtn.addEventListener('click', async () => {
+        if (!window.DealNestDB || !window.DealNestDB.isConfigured()) {
+          alert('Please connect your Supabase database first by entering your URL and Anon Key.');
+          return;
+        }
+        showToast('🚀 Uploading all deals to Supabase...');
+        const res = await window.DealNestDB.syncAllDeals(products, tagInput.value.trim());
+        if (res.success) {
+          showToast(`✅ Successfully uploaded ${res.count} deals to Supabase Cloud!`);
+        } else {
+          alert('Upload failed: ' + res.error);
+        }
+      });
+
+      pullFromCloudBtn.addEventListener('click', async () => {
+        if (!window.DealNestDB || !window.DealNestDB.isConfigured()) {
+          alert('Please connect your Supabase database first.');
+          return;
+        }
+        showToast('📥 Loading deals from cloud...');
+        const [cloudDeals, cloudSettings] = await Promise.all([
+          window.DealNestDB.fetchDeals(),
+          window.DealNestDB.fetchSettings()
+        ]);
+
+        if (cloudDeals && cloudDeals.length > 0) {
+          products = cloudDeals;
+          if (cloudSettings && cloudSettings.amazon_tag) {
+            tagInput.value = cloudSettings.amazon_tag;
+          }
+          renderDealsList();
+          showToast(`✅ Loaded ${cloudDeals.length} deals from Supabase Cloud!`);
+        } else {
+          alert('No deals found in Supabase yet. Use "Push All Deals to Cloud" to upload them.');
+        }
+      });
 
       document.getElementById('saveTagBtn').addEventListener('click', persist);
       document.getElementById('saveAllDealsBtn').addEventListener('click', persist);
@@ -520,7 +675,19 @@
         document.getElementById('newIsTopPick').checked = false;
       });
 
+      // Initialize
+      updateSupabaseUI();
       renderDealsList();
+
+      // If Supabase already configured, load latest from cloud in background
+      if (window.DealNestDB && window.DealNestDB.isConfigured()) {
+        window.DealNestDB.fetchDeals().then(cloudDeals => {
+          if (cloudDeals && cloudDeals.length > 0) {
+            products = cloudDeals;
+            renderDealsList();
+          }
+        }).catch(() => {});
+      }
     });
   </script>
 </body>

@@ -35,6 +35,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const config = getMergedConfig();
 
+  // Async Cloud Sync with Supabase (Live updates for all website visitors)
+  async function loadCloudData() {
+    if (window.DealNestDB && window.DealNestDB.isConfigured()) {
+      try {
+        const [cloudDeals, cloudSettings] = await Promise.all([
+          window.DealNestDB.fetchDeals(),
+          window.DealNestDB.fetchSettings()
+        ]);
+
+        let hasUpdates = false;
+        if (cloudSettings && cloudSettings.amazon_tag) {
+          config.amazonTag = cloudSettings.amazon_tag;
+          hasUpdates = true;
+        }
+
+        if (cloudDeals && cloudDeals.length > 0) {
+          config.products = cloudDeals;
+          hasUpdates = true;
+        }
+
+        if (hasUpdates) {
+          if (typeof initTopPicksSlider === 'function') initTopPicksSlider();
+          if (typeof renderDealsGrid === 'function') renderDealsGrid();
+        }
+      } catch (err) {
+        console.warn('Supabase cloud fetch fallback to local config:', err);
+      }
+    }
+  }
+  // Trigger cloud sync
+  loadCloudData();
+
   // State Management
   let currentCategory = 'all';
   let searchQuery = '';
