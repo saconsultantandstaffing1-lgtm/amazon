@@ -1,0 +1,1434 @@
+/**
+ * ====================================================================
+ * BLOCKBUSTER DEALS - STYLESHEET (MILD COLOR PALETTE)
+ * ====================================================================
+ * Soft, comfortable, and modern aesthetic.
+ * Built for high readability, responsive layouts, and smooth interactions.
+ */
+
+:root {
+  /* Mild Color System */
+  --bg-page: #F8F9FA;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F1F5F9;
+  --bg-hover: #F8FAFC;
+  
+  /* Text Colors */
+  --text-main: #1E293B;
+  --text-muted: #64748B;
+  --text-light: #94A3B8;
+  
+  /* Mild Brand & Accents */
+  --brand-primary: #D97736;       /* Muted warm terracotta / apricot */
+  --brand-primary-hover: #C26325;
+  --brand-soft: #FFF7ED;          /* Subtle warm tint */
+  --brand-border: #FED7AA;
+  
+  /* Deal & Price Colors (Mild, avoiding harsh neon red) */
+  --price-deal: #BE185D;          /* Soft berry crimson */
+  --price-deal-dark: #9D174D;
+  --price-original: #94A3B8;      /* Strikethrough gray */
+  --price-badge-bg: #FFE4E6;
+  
+  /* Mild Status Chip Colors */
+  --badge-new-bg: #FEF3C7;
+  --badge-new-text: #92400E;
+  --badge-hot-bg: #FEE2E2;
+  --badge-hot-text: #B91C1C;
+  --badge-deal-bg: #DCFCE7;
+  --badge-deal-text: #166534;
+  --badge-store-bg: #F1F5F9;
+  --badge-store-text: #475569;
+  
+  /* Borders & Shadows */
+  --border-color: #E2E8F0;
+  --border-card: #E5E7EB;
+  --border-active: #CBD5E1;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-card-hover: 0 8px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-flyout: 0 12px 28px rgba(0, 0, 0, 0.1);
+  
+  /* Typography & Sizing */
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+  --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  --max-width: 1240px;
+}
+
+/* Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* ====================================================================
+   1. TOP ANNOUNCEMENT BAR (Warm Mild Peach/Amber Tint)
+   ==================================================================== */
+.top-notice-bar {
+  background: linear-gradient(90deg, #FEF3C7 0%, #FDE68A 100%);
+  border-bottom: 1px solid #FCD34D;
+  padding: 8px 16px;
+  text-align: center;
+}
+
+.notice-inner p {
+  font-size: 0.84rem;
+  color: #78350F;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ====================================================================
+   2. MAIN SITE HEADER
+   ==================================================================== */
+.site-header {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 12px 0;
+  box-shadow: var(--shadow-xs);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* Brand Identity */
+.brand-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.brand-badge-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%);
+  color: var(--brand-primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(217, 119, 54, 0.15);
+}
+
+.brand-badge-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-main);
+  line-height: 1.15;
+}
+
+.brand-sub {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--brand-primary);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Center Tagline (Distinct Mild Badge Pill) */
+.header-tagline-wrap {
+  display: none;
+  text-align: center;
+  flex: 1;
+}
+
+@media (min-width: 992px) {
+  .header-tagline-wrap {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.header-tagline {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1E3A8A;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1px solid #BFDBFE;
+  padding: 6px 18px;
+  border-radius: var(--radius-full);
+  letter-spacing: -0.01em;
+  display: inline-block;
+  box-shadow: 0 1px 3px rgba(30, 58, 138, 0.08);
+}
+
+/* Search Box */
+.header-search-wrap {
+  flex: 1;
+  max-width: 380px;
+}
+
+.search-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 0 14px;
+  transition: var(--transition);
+}
+
+.search-input-box:focus-within {
+  background-color: var(--bg-surface);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(217, 119, 54, 0.12);
+}
+
+.search-input-box .search-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.search-input-box input {
+  width: 100%;
+  height: 40px;
+  padding: 0 8px;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text-main);
+  outline: none;
+}
+
+.search-input-box input::placeholder {
+  color: var(--text-light);
+}
+
+.search-clear-btn {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-subtle);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+@media (min-width: 900px) {
+  .mobile-menu-btn {
+    display: none;
+  }
+}
+
+.mobile-menu-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ====================================================================
+   3. CATEGORY NAVIGATION BAR (Distinct Mild Colored Strip + Pill Tabs)
+   ==================================================================== */
+.category-nav-bar {
+  background: linear-gradient(180deg, #F8FAFC 0%, #EDF2F7 100%);
+  border-bottom: 1.5px solid #CBD5E1;
+  position: relative;
+  z-index: 90;
+  display: none;
+  padding: 6px 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+@media (min-width: 900px) {
+  .category-nav-bar {
+    display: block;
+  }
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.nav-menu-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  gap: 10px;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 0;
+}
+
+.nav-menu-list::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-item {
+  white-space: nowrap;
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.nav-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 9px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #334155;
+  background-color: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-full);
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.nav-link:hover {
+  color: #0F172A;
+  background-color: #F8FAFC;
+  border-color: #94A3B8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.nav-item.active .nav-link {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #D97736 0%, #C26325 100%);
+  border-color: #C26325;
+  font-weight: 700;
+  box-shadow: 0 3px 8px rgba(217, 119, 54, 0.28);
+}
+
+.nav-item.highlight .nav-link {
+  color: #92400E;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border-color: #FCD34D;
+  font-weight: 700;
+}
+
+/* Mobile Drawer */
+.mobile-drawer {
+  display: none;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px;
+  box-shadow: var(--shadow-flyout);
+}
+
+.mobile-drawer.open {
+  display: block;
+}
+
+.mobile-search-inner {
+  margin-bottom: 14px;
+}
+
+.mobile-search-inner input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.mobile-nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mobile-nav-link {
+  display: block;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.mobile-nav-link:hover, .mobile-nav-link.active {
+  background-color: var(--brand-soft);
+  color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+
+.mobile-nav-link.highlight {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border-color: #FCD34D;
+  font-weight: 700;
+}
+
+/* ====================================================================
+   4. FEATURED HERO CAROUSEL / BANNERS (Ultra-Compact & Sleek)
+   ==================================================================== */
+.hero-carousel-section {
+  padding: 6px 0 2px;
+}
+
+.hero-carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+  max-height: 84px;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+
+.carousel-slide {
+  min-width: 100%;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 68px;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .carousel-slide {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+}
+
+.slide-content {
+  flex: 1;
+  min-width: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Badge & Coupon Pill Row */
+.slide-badge-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.slide-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.slide-coupon-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #1E293B;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px dashed #D97736;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.slide-coupon-pill:hover {
+  background: #FFFFFF;
+  border-color: #C2410C;
+}
+
+.slide-coupon-pill strong {
+  color: #C2410C;
+  font-weight: 800;
+}
+
+.slide-title {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 768px) {
+  .slide-title {
+    font-size: 1.08rem;
+  }
+}
+
+.slide-subtitle {
+  font-size: 0.76rem;
+  color: #475569;
+  max-width: 500px;
+  margin-bottom: 0px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Perks List */
+.slide-perks-row {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .slide-perks-row {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 8px;
+  }
+}
+
+.slide-perk-item {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #166534;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
+}
+
+.slide-action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  background-color: var(--text-main);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  transition: var(--transition);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.slide-btn:hover {
+  background-color: var(--brand-primary);
+  transform: translateY(-1px);
+}
+
+/* Visual Product Showcase (Compact Mini Cluster) */
+.slide-visual-showcase {
+  position: relative;
+  width: 110px;
+  height: 58px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .slide-visual-showcase {
+    display: flex;
+  }
+}
+
+.showcase-card {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 3px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.showcase-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.showcase-card.primary {
+  right: 10px;
+  top: 4px;
+  transform: rotate(-3deg);
+  z-index: 2;
+}
+
+.showcase-card.secondary {
+  left: 6px;
+  bottom: 4px;
+  transform: rotate(4deg) scale(0.92);
+  z-index: 1;
+  opacity: 0.95;
+}
+
+/* Floating discount burst tag */
+.slide-floating-tag {
+  position: absolute;
+  top: -4px;
+  left: 4px;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+  transform: rotate(-6deg);
+  z-index: 4;
+  white-space: nowrap;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-xs);
+  z-index: 5;
+}
+
+.carousel-arrow:hover {
+  background-color: #FFFFFF;
+  color: var(--brand-primary);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.carousel-arrow.prev { left: 4px; }
+.carousel-arrow.next { right: 4px; }
+
+.carousel-arrow svg {
+  width: 12px;
+  height: 12px;
+}
+
+.carousel-dots {
+  display: none;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 5;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.dot.active {
+  background-color: var(--brand-primary);
+  width: 20px;
+}
+
+/* ====================================================================
+   5. "TOP PICKS" SECTION
+   ==================================================================== */
+.top-picks-section {
+  padding: 16px 0 10px;
+}
+
+.section-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.title-with-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-heading {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.heading-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  background-color: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.carousel-scroll-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.scroll-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.scroll-arrow:hover {
+  background-color: var(--bg-subtle);
+  border-color: var(--brand-primary);
+}
+
+.top-picks-slider {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 4px 0 10px;
+}
+
+.top-picks-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.top-picks-track {
+  display: flex;
+  gap: 14px;
+  min-width: min-content;
+}
+
+/* ====================================================================
+   6. TAXONOMY / CATEGORY FILTER PILLS
+   ==================================================================== */
+.taxonomy-filter-section {
+  padding: 14px 0 18px;
+}
+
+.category-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.category-filter-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-pill {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-xs);
+}
+
+.filter-pill:hover {
+  border-color: #CBD5E1;
+  color: var(--text-main);
+  background-color: var(--bg-hover);
+}
+
+.filter-pill.active {
+  background-color: var(--brand-soft);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+.filter-pill .pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--brand-primary);
+}
+
+/* ====================================================================
+   7. THE ICONIC BLOCKBUSTER DEALS PRODUCT CARDS
+   ==================================================================== */
+.deals-grid-section {
+  padding: 10px 0 40px;
+}
+
+.search-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.reset-search-btn {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* 3-column Grid on Desktop, 2 on Tablet, 1 on Mobile */
+.blockbuster-deals-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 680px) {
+  .blockbuster-deals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .blockbuster-deals-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* THE SIGNATURE CARD (Horizontal dual-box matching Blockbuster Deals) */
+.deal-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: var(--transition);
+  text-decoration: none;
+  color: inherit;
+  height: 120px;
+  position: relative;
+}
+
+.deal-card:hover {
+  transform: translateY(-2px);
+  border-color: #CBD5E1;
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Card Left: Image & Badge */
+.deal-image-box {
+  width: 105px;
+  height: 100%;
+  min-width: 105px;
+  position: relative;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-right: 1px solid #F1F5F9;
+  flex-shrink: 0;
+}
+
+.deal-image-box img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+}
+
+.deal-card:hover .deal-image-box img {
+  transform: scale(1.05);
+}
+
+/* Badge (Mild pastel colors) */
+.deal-card-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.deal-card-badge.badge-new {
+  background-color: var(--badge-new-bg);
+  color: var(--badge-new-text);
+  border: 1px solid rgba(146, 64, 14, 0.15);
+}
+
+.deal-card-badge.badge-hot {
+  background-color: var(--badge-hot-bg);
+  color: var(--badge-hot-text);
+  border: 1px solid rgba(185, 28, 28, 0.15);
+}
+
+.deal-card-badge.badge-deal {
+  background-color: var(--badge-deal-bg);
+  color: var(--badge-deal-text);
+  border: 1px solid rgba(22, 101, 52, 0.15);
+}
+
+/* Card Right: Title, Price, Store Attribution */
+.deal-details-box {
+  flex: 1;
+  padding: 8px 12px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  min-width: 0; /* Enables text truncation */
+}
+
+/* 2-line Clamped Title */
+.deal-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-main);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+/* Pricing Row */
+.deal-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.deal-original-price {
+  font-size: 0.82rem;
+  color: var(--price-original);
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.deal-active-price {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--price-deal);
+  letter-spacing: -0.02em;
+}
+
+.deal-discount-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--badge-deal-text);
+  background-color: var(--badge-deal-bg);
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .deal-discount-pill {
+    display: inline-block;
+  }
+}
+
+/* Store Attribution Bottom Row */
+.deal-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.deal-store-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.deal-link-hint {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.deal-card:hover .deal-link-hint {
+  opacity: 1;
+}
+
+/* Top Picks Cards (Slightly wider for horizontal scroll) */
+.top-picks-track .deal-card {
+  width: 310px;
+  min-width: 310px;
+}
+
+/* ====================================================================
+   8. NO DEALS EMPTY STATE & LOAD MORE
+   ==================================================================== */
+.no-deals-state {
+  text-align: center;
+  padding: 50px 20px;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-color);
+  margin: 20px 0;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.no-deals-state h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.no-deals-state p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 18px;
+}
+
+.btn-mild-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  background-color: var(--brand-primary);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-mild-primary:hover {
+  background-color: var(--brand-primary-hover);
+}
+
+.load-more-wrap {
+  text-align: center;
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-load-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 36px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-load-more:hover {
+  background-color: var(--brand-soft);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  transform: translateY(-1px);
+}
+
+.deals-count-info {
+  font-size: 0.82rem;
+  color: var(--text-light);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ====================================================================
+   9. TRUST BANNER CARD
+   ==================================================================== */
+.trust-banner-section {
+  padding: 10px 0 30px;
+}
+
+.trust-banner-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  box-shadow: var(--shadow-xs);
+}
+
+@media (min-width: 768px) {
+  .trust-banner-card {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.trust-icon {
+  font-size: 1.6rem;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.trust-detail strong {
+  display: block;
+  font-size: 0.92rem;
+  color: var(--text-main);
+}
+
+.trust-detail p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ====================================================================
+   10. SITE FOOTER
+   ==================================================================== */
+.site-footer {
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  padding: 40px 0 24px;
+  margin-top: 20px;
+}
+
+.footer-top {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+@media (min-width: 768px) {
+  .footer-top {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.footer-logo-icon {
+  font-size: 1.3rem;
+}
+
+.footer-logo-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.footer-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  max-width: 420px;
+}
+
+/* Social Media Chips */
+.footer-social-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.social-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.social-icons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.social-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-subtle);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.social-chip svg {
+  width: 16px;
+  height: 16px;
+}
+
+.social-chip.whatsapp:hover {
+  background-color: #DCFCE7;
+  color: #166534;
+}
+
+.social-chip.telegram:hover {
+  background-color: #E0F2FE;
+  color: #0369A1;
+}
+
+.social-chip.instagram:hover {
+  background-color: #FCE7F3;
+  color: #9D174D;
+}
+
+.social-chip.facebook:hover {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+}
+
+/* Footer Bottom Row */
+.footer-bottom {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer-affiliate-note {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  line-height: 1.5;
+}
+
+.footer-copyright-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+@media (min-width: 640px) {
+  .footer-copyright-row {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-links a {
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+
+.footer-links a:hover {
+  color: var(--brand-primary);
+}
+
+.admin-portal-link {
+  font-weight: 700;
+  color: var(--brand-primary) !important;
+}
+
+/* Helper Utilities */
+.hidden {
+  display: none !important;
+}

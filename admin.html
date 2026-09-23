@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blockbuster Deals — Admin Dashboard</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-page: #F8F9FA;
+      --bg-surface: #FFFFFF;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --brand-primary: #D97736;
+      --brand-primary-hover: #C26325;
+      --brand-soft: #FFF7ED;
+      --border-color: #E2E8F0;
+      --color-deal: #BE185D;
+      --radius: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      padding: 24px 16px 60px;
+      line-height: 1.5;
+    }
+
+    .admin-container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .admin-header {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    @media (min-width: 640px) {
+      .admin-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .admin-title-wrap h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .admin-title-wrap p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 20px;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background-color: var(--brand-primary);
+      color: #FFFFFF;
+    }
+    .btn-primary:hover {
+      background-color: var(--brand-primary-hover);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background: var(--brand-soft);
+      border-color: var(--brand-primary);
+      color: var(--brand-primary);
+    }
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.8rem;
+    }
+
+    /* Cards */
+    .admin-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .form-row-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+    input[type="text"], input[type="url"], select {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: #FAFBFD;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: var(--brand-primary);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(217, 119, 54, 0.1);
+    }
+
+    /* Deals List */
+    .deal-item-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      background-color: #FFFFFF;
+      transition: all 0.2s;
+    }
+    @media (min-width: 640px) {
+      .deal-item-row {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+    .deal-item-row:hover {
+      border-color: var(--brand-primary);
+      box-shadow: var(--shadow-sm);
+    }
+    .deal-thumb {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #F8F9FA;
+      flex-shrink: 0;
+      padding: 4px;
+      border: 1px solid var(--border-color);
+    }
+    .deal-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .deal-info h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .deal-meta-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .deal-meta-text .price {
+      color: var(--color-deal);
+      font-weight: 800;
+    }
+    .deal-meta-text .store {
+      font-style: italic;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1E293B;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 0.88rem;
+      box-shadow: var(--shadow-md);
+      display: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container">
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="admin-title-wrap">
+        <h1>🛍️ Blockbuster Deals Manager</h1>
+        <p>Manage product deals, prices, stores, and your Amazon Associates ID</p>
+      </div>
+      <div>
+        <a href="index.html" class="btn btn-outline" target="_blank">
+          🌐 View Live Website &rarr;
+        </a>
+      </div>
+    </header>
+
+    <!-- SECTION 1: GLOBAL AMAZON TAG -->
+    <div class="admin-card">
+      <div class="card-title">🏷️ Amazon Associates Tracking Tag</div>
+      <p class="card-desc">Your official Amazon Store ID (e.g. <code>smartnest-20</code>). Appends automatically to your product deal links.</p>
+      <div class="form-row" style="max-width: 500px;">
+        <div>
+          <label for="tagInput">Amazon Tracking Tag</label>
+          <input type="text" id="tagInput" value="smartnest-20" placeholder="e.g. smartnest-20">
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+          <button type="button" class="btn btn-primary" id="saveTagBtn">Save Tracking Tag</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: ADD NEW DEAL -->
+    <div class="admin-card">
+      <div class="card-title">➕ Add New Deal Card</div>
+      <p class="card-desc">Quickly add a new deal matching the Blockbuster Deals dual-pricing model.</p>
+      
+      <div class="form-group">
+        <label for="newTitle">Product Title</label>
+        <input type="text" id="newTitle" placeholder="e.g. Sony WH-1000XM5 Wireless Headphones">
+      </div>
+
+      <div class="form-row form-row-3">
+        <div class="form-group">
+          <label for="newCategory">Category</label>
+          <select id="newCategory">
+            <option value="amazon-deals">Amazon Deals</option>
+            <option value="branded-deals">Branded Deals</option>
+            <option value="electronics">Electronics</option>
+            <option value="clothing">Clothing</option>
+            <option value="furniture">Furniture</option>
+            <option value="household-and-kitchen">Household & Kitchen</option>
+            <option value="kids">Kids</option>
+            <option value="shoes">Shoes</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="newStore">Store Name</label>
+          <input type="text" id="newStore" value="Amazon" placeholder="Amazon, Woot, Target...">
+        </div>
+        <div class="form-group">
+          <label for="newBadge">Badge Label</label>
+          <input type="text" id="newBadge" value="New" placeholder="New, Hot Deal, 50% OFF...">
+        </div>
+      </div>
+
+      <div class="form-row form-row-3">
+        <div class="form-group">
+          <label for="newOriginalPrice">Original Price (Strikethrough)</label>
+          <input type="text" id="newOriginalPrice" placeholder="e.g. $19.00">
+        </div>
+        <div class="form-group">
+          <label for="newDealPrice">Deal Price (Highlighted)</label>
+          <input type="text" id="newDealPrice" placeholder="e.g. $9.00">
+        </div>
+        <div class="form-group">
+          <label for="newDiscount">Discount Tag</label>
+          <input type="text" id="newDiscount" placeholder="e.g. 52% OFF">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="newImage">Image URL</label>
+          <input type="url" id="newImage" placeholder="https://images.unsplash.com/... or Amazon image URL">
+        </div>
+        <div class="form-group">
+          <label for="newUrl">Affiliate Link / Shortlink</label>
+          <input type="url" id="newUrl" placeholder="https://amzn.to/... or search link">
+        </div>
+      </div>
+
+      <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+        <input type="checkbox" id="newIsTopPick" style="width: 18px; height: 18px;">
+        <label for="newIsTopPick" style="margin-bottom: 0; cursor: pointer;">Feature in "Top Picks" Carousel</label>
+      </div>
+
+      <button type="button" class="btn btn-primary" id="addDealBtn">
+        ✨ Add Deal to Website
+      </button>
+    </div>
+
+    <!-- SECTION 3: MANAGE EXISTING DEALS -->
+    <div class="admin-card">
+      <div class="card-title">📋 Active Deals Inventory (<span id="dealCount">0</span>)</div>
+      <p class="card-desc">Edit links or delete existing deals. Changes take effect on the live website immediately.</p>
+      
+      <div id="dealsContainer">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div style="margin-top: 18px; display: flex; gap: 12px;">
+        <button type="button" class="btn btn-primary" id="saveAllDealsBtn">
+          💾 Save All Changes
+        </button>
+        <button type="button" class="btn btn-outline" id="resetDealsBtn">
+          🔄 Reset to Default Deals
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">✅ Saved! Live website updated instantly.</div>
+
+  <!-- Scripts -->
+  <script src="affiliate-config.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const baseConfig = window.AFFILIATE_CONFIG || { products: [] };
+
+      function getStorageData() {
+        try {
+          const saved = localStorage.getItem('blockbuster_admin_data') || localStorage.getItem('smartnest_admin_data');
+          if (saved) return JSON.parse(saved);
+        } catch (e) {}
+        return {
+          amazonTag: baseConfig.amazonTag || 'smartnest-20',
+          products: baseConfig.products || []
+        };
+      }
+
+      let adminData = getStorageData();
+      let products = adminData.products && adminData.products.length ? adminData.products : baseConfig.products;
+
+      // Populate Tag
+      const tagInput = document.getElementById('tagInput');
+      tagInput.value = adminData.amazonTag || 'smartnest-20';
+
+      function showToast(msg = '✅ Saved! Live website updated instantly.') {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2600);
+      }
+
+      function persist() {
+        adminData.amazonTag = tagInput.value.trim();
+        adminData.products = products;
+        localStorage.setItem('blockbuster_admin_data', JSON.stringify(adminData));
+        showToast();
+      }
+
+      document.getElementById('saveTagBtn').addEventListener('click', persist);
+      document.getElementById('saveAllDealsBtn').addEventListener('click', persist);
+
+      document.getElementById('resetDealsBtn').addEventListener('click', () => {
+        if (confirm('Reset all deals back to the original default catalog?')) {
+          localStorage.removeItem('blockbuster_admin_data');
+          localStorage.removeItem('smartnest_admin_data');
+          products = [...baseConfig.products];
+          renderDealsList();
+          persist();
+        }
+      });
+
+      // Render Deals
+      function renderDealsList() {
+        const container = document.getElementById('dealsContainer');
+        document.getElementById('dealCount').textContent = products.length;
+
+        container.innerHTML = products.map((item, idx) => `
+          <div class="deal-item-row" data-idx="${idx}">
+            <img src="${item.image}" alt="${item.title}" class="deal-thumb">
+            <div class="deal-info">
+              <h4>${item.title}</h4>
+              <div class="deal-meta-text">
+                <span class="price">${item.dealPrice || ''}</span> 
+                <span style="text-decoration: line-through; margin-right: 6px;">${item.originalPrice || ''}</span>
+                • Store: <span class="store">${item.store || 'Amazon'}</span>
+                • Category: <strong>${item.category}</strong>
+                ${item.isTopPick ? ' • <span style="color:var(--brand-primary); font-weight:700;">★ Top Pick</span>' : ''}
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <input type="url" class="deal-link-input" data-idx="${idx}" value="${item.affiliateUrl || ''}" placeholder="https://amzn.to/..." style="font-size:0.82rem; padding: 6px 10px;">
+                <button type="button" class="btn btn-outline btn-sm remove-deal-btn" data-idx="${idx}" style="color: #B91C1C; border-color: #FECACA;">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Wire delete buttons
+        document.querySelectorAll('.remove-deal-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.idx, 10);
+            products.splice(idx, 1);
+            renderDealsList();
+            persist();
+          });
+        });
+
+        // Wire link edits
+        document.querySelectorAll('.deal-link-input').forEach(input => {
+          input.addEventListener('change', () => {
+            const idx = parseInt(input.dataset.idx, 10);
+            products[idx].affiliateUrl = input.value.trim();
+          });
+        });
+      }
+
+      // Add New Deal
+      document.getElementById('addDealBtn').addEventListener('click', () => {
+        const title = document.getElementById('newTitle').value.trim();
+        const category = document.getElementById('newCategory').value;
+        const store = document.getElementById('newStore').value.trim() || 'Amazon';
+        const badge = document.getElementById('newBadge').value.trim() || 'New';
+        const origPrice = document.getElementById('newOriginalPrice').value.trim() || '$19.00';
+        const dealPrice = document.getElementById('newDealPrice').value.trim() || '$9.00';
+        const discount = document.getElementById('newDiscount').value.trim() || '';
+        const image = document.getElementById('newImage').value.trim() || 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=600&q=80';
+        const url = document.getElementById('newUrl').value.trim() || 'https://www.amazon.com/s?k=deals';
+        const isTopPick = document.getElementById('newIsTopPick').checked;
+
+        if (!title) {
+          alert('Please enter a product title');
+          return;
+        }
+
+        const newProduct = {
+          id: 'deal-' + Date.now(),
+          title,
+          category,
+          store,
+          badge,
+          badgeType: 'new',
+          originalPrice: origPrice,
+          dealPrice: dealPrice,
+          discount: discount,
+          image,
+          affiliateUrl: url,
+          isTopPick
+        };
+
+        products.unshift(newProduct);
+        renderDealsList();
+        persist();
+
+        // Reset inputs
+        document.getElementById('newTitle').value = '';
+        document.getElementById('newOriginalPrice').value = '';
+        document.getElementById('newDealPrice').value = '';
+        document.getElementById('newDiscount').value = '';
+        document.getElementById('newImage').value = '';
+        document.getElementById('newUrl').value = '';
+        document.getElementById('newIsTopPick').checked = false;
+      });
+
+      renderDealsList();
+    });
+  </script>
+</body>
+</html>

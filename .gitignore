@@ -1,0 +1,7 @@
+# Debugging and scratch directories
+scratch/
+*.log
+*.png
+.DS_Store
+Thumbs.db
+
