@@ -238,6 +238,76 @@ async function syncAllDealsToSupabase(products, amazonTag) {
   }
 }
 
+// ==========================================
+// SUPABASE AUTHENTICATION HELPERS FOR ADMIN
+// ==========================================
+
+async function adminSignIn(email, password) {
+  const client = getSupabaseClient();
+  if (!client) return { success: false, error: 'Supabase client not initialized' };
+
+  try {
+    const { data, error } = await client.auth.signInWithPassword({
+      email: email.trim(),
+      password
+    });
+    if (error) throw error;
+    return { success: true, user: data.user, session: data.session };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+async function adminSignUp(email, password) {
+  const client = getSupabaseClient();
+  if (!client) return { success: false, error: 'Supabase client not initialized' };
+
+  try {
+    const { data, error } = await client.auth.signUp({
+      email: email.trim(),
+      password
+    });
+    if (error) throw error;
+    return { success: true, user: data.user, session: data.session };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+async function adminSignOut() {
+  const client = getSupabaseClient();
+  if (!client) return { success: true };
+
+  try {
+    const { error } = await client.auth.signOut();
+    if (error) throw error;
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+async function getAdminSession() {
+  const client = getSupabaseClient();
+  if (!client) return null;
+
+  try {
+    const { data, error } = await client.auth.getSession();
+    if (error) return null;
+    return data.session;
+  } catch (err) {
+    return null;
+  }
+}
+
+function onAdminAuthStateChange(callback) {
+  const client = getSupabaseClient();
+  if (!client) return null;
+  return client.auth.onAuthStateChange((event, session) => {
+    callback(event, session);
+  });
+}
+
 // Export functions to window for global access
 window.DealNestDB = {
   isConfigured: isSupabaseConfigured,
@@ -248,5 +318,12 @@ window.DealNestDB = {
   fetchSettings: fetchSettingsFromSupabase,
   saveDeal: saveDealToSupabase,
   saveSetting: saveSettingToSupabase,
-  syncAllDeals: syncAllDealsToSupabase
+  syncAllDeals: syncAllDealsToSupabase,
+  // Auth
+  signIn: adminSignIn,
+  signUp: adminSignUp,
+  signOut: adminSignOut,
+  getSession: getAdminSession,
+  onAuthStateChange: onAdminAuthStateChange
 };
+

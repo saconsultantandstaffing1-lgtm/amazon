@@ -159,20 +159,26 @@
       color: var(--text-main);
       margin-bottom: 6px;
     }
-    input[type="text"], input[type="url"], select {
+    input[type="text"],
+    input[type="url"],
+    input[type="email"],
+    input[type="password"],
+    select {
       width: 100%;
-      padding: 9px 12px;
+      box-sizing: border-box;
+      padding: 11px 14px;
       border-radius: 8px;
-      border: 1px solid var(--border-color);
+      border: 1.5px solid var(--border-color);
       background-color: #FAFBFD;
       font-family: inherit;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
     input:focus, select:focus {
       border-color: var(--brand-primary);
       background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(23, 76, 60, 0.1);
       box-shadow: 0 0 0 3px rgba(217, 119, 54, 0.1);
     }
 
@@ -261,15 +267,46 @@
         <h1>🛍️ Blockbuster Deals Manager</h1>
         <p>Manage product deals, prices, stores, and your Amazon Associates ID</p>
       </div>
-      <div>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span id="adminUserEmail" style="font-size: 0.85rem; font-weight: 700; color: var(--brand-primary); background: #E8F0EA; padding: 5px 14px; border-radius: 999px; display: none;"></span>
+        <button type="button" id="adminSignOutBtn" class="btn btn-outline btn-sm" style="display: none; color: #DC2626; border-color: #FECACA;">Sign Out</button>
         <a href="index.html" class="btn btn-outline" target="_blank">
           🌐 View Live Website &rarr;
         </a>
       </div>
     </header>
 
-    <!-- SECTION 0: SUPABASE CLOUD DATABASE SYNC -->
-    <div class="admin-card" id="supabaseCard" style="border-left: 4px solid #10B981; background: #FAFDFB;">
+    <!-- ADMIN AUTHENTICATION CARD (Displayed when not logged in) -->
+    <div id="authScreen" class="admin-card" style="max-width: 440px; margin: 40px auto; padding: 36px; border-top: 5px solid var(--brand-primary); box-shadow: var(--shadow-md);">
+      <div class="card-title" style="font-size: 1.35rem; justify-content: center; margin-bottom: 6px;">
+        🔒 Admin Portal
+      </div>
+      <p class="card-desc" style="text-align: center; margin-bottom: 22px;">
+        Sign in to manage product deals, referral links, and tracking tags.
+      </p>
+
+      <div id="authAlert" style="display: none; padding: 12px 14px; border-radius: 8px; font-size: 0.86rem; margin-bottom: 18px; line-height: 1.4;"></div>
+
+      <form id="authForm" onsubmit="return false;">
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label for="authEmail">Admin Email</label>
+          <input type="email" id="authEmail" value="saconsultantandstaffing1@gmail.com" placeholder="admin@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label for="authPassword">Password</label>
+          <input type="password" id="authPassword" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer;">
+          Sign In to Admin
+        </button>
+      </form>
+    </div>
+
+    <!-- MAIN ADMIN CONTENT (Hidden until logged in) -->
+    <div id="adminContent" style="display: none;">
+      <!-- SECTION 0: SUPABASE CLOUD DATABASE SYNC -->
+      <div class="admin-card" id="supabaseCard" style="border-left: 4px solid #10B981; background: #FAFDFB;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 8px;">
         <div class="card-title" style="margin-bottom: 0;">
           ⚡ Supabase Cloud Database Sync
@@ -416,7 +453,8 @@
         </button>
       </div>
     </div>
-  </div>
+    </div> <!-- /adminContent -->
+  </div> <!-- /admin-container -->
 
   <!-- Toast -->
   <div class="toast" id="toast">✅ Saved! Live website updated instantly.</div>
@@ -426,16 +464,111 @@
   <script src="supabase-client.js"></script>
   <script src="affiliate-config.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const baseConfig = window.AFFILIATE_CONFIG || { products: [] };
 
-      // Supabase Elements
+      // Auth Elements
+      const authScreen = document.getElementById('authScreen');
+      const authForm = document.getElementById('authForm');
+      const authEmail = document.getElementById('authEmail');
+      const authPassword = document.getElementById('authPassword');
+      const authSubmitBtn = document.getElementById('authSubmitBtn');
+      const authAlert = document.getElementById('authAlert');
+      const adminContent = document.getElementById('adminContent');
+      const adminUserEmail = document.getElementById('adminUserEmail');
+      const adminSignOutBtn = document.getElementById('adminSignOutBtn');
+
+      // Supabase & Admin Elements
       const urlInput = document.getElementById('supabaseUrlInput');
       const keyInput = document.getElementById('supabaseKeyInput');
       const statusBadge = document.getElementById('supabaseStatusBadge');
       const saveSupabaseBtn = document.getElementById('saveSupabaseBtn');
       const syncToCloudBtn = document.getElementById('syncToCloudBtn');
       const pullFromCloudBtn = document.getElementById('pullFromCloudBtn');
+
+      function showAuthAlert(msg, isSuccess = false) {
+        authAlert.textContent = msg;
+        authAlert.style.display = 'block';
+        if (isSuccess) {
+          authAlert.style.background = '#DEF7EC';
+          authAlert.style.color = '#03543F';
+          authAlert.style.border = '1px solid #BCF0DA';
+        } else {
+          authAlert.style.background = '#FDE8E8';
+          authAlert.style.color = '#9B1C1C';
+          authAlert.style.border = '1px solid #FBD5D5';
+        }
+      }
+
+      function hideAuthAlert() {
+        authAlert.style.display = 'none';
+      }
+
+      // Handle Sign In
+      authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAuthAlert();
+
+        const email = authEmail.value.trim();
+        const password = authPassword.value;
+
+        if (!email || !password) {
+          showAuthAlert('Please fill in both email and password.');
+          return;
+        }
+
+        authSubmitBtn.disabled = true;
+        authSubmitBtn.textContent = 'Signing in...';
+
+        try {
+          const res = await window.DealNestDB.signIn(email, password);
+          if (res.success) {
+            showAuthAlert('Signed in successfully!', true);
+          } else {
+            showAuthAlert('Sign in failed: ' + (res.error || 'Invalid email or password'));
+          }
+        } catch (err) {
+          showAuthAlert('Authentication error: ' + err.message);
+        } finally {
+          authSubmitBtn.disabled = false;
+          authSubmitBtn.textContent = 'Sign In to Admin';
+        }
+      });
+
+      // Sign Out
+      adminSignOutBtn.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to sign out?')) {
+          await window.DealNestDB.signOut();
+          updateAuthState(null);
+        }
+      });
+
+      // Update UI according to active session
+      function updateAuthState(session) {
+        if (session && session.user) {
+          authScreen.style.display = 'none';
+          adminContent.style.display = 'block';
+          adminUserEmail.textContent = '👤 ' + session.user.email;
+          adminUserEmail.style.display = 'inline-block';
+          adminSignOutBtn.style.display = 'inline-flex';
+
+          updateSupabaseUI();
+          renderDealsList();
+
+          // Refresh deals from cloud
+          window.DealNestDB.fetchDeals().then(cloudDeals => {
+            if (cloudDeals && cloudDeals.length > 0) {
+              products = cloudDeals;
+              renderDealsList();
+            }
+          }).catch(() => {});
+        } else {
+          authScreen.style.display = 'block';
+          adminContent.style.display = 'none';
+          adminUserEmail.style.display = 'none';
+          adminSignOutBtn.style.display = 'none';
+        }
+      }
 
       function updateSupabaseUI() {
         if (!window.DealNestDB) return;
@@ -513,7 +646,6 @@
         if (settings !== null) {
           updateSupabaseUI();
           showToast('🎉 Supabase connected successfully!');
-          // Check if cloud already has deals
           const cloudDeals = await window.DealNestDB.fetchDeals();
           if (cloudDeals && cloudDeals.length > 0) {
             if (confirm(`Supabase has ${cloudDeals.length} deals in the cloud. Do you want to load them into this admin view?`)) {
@@ -521,20 +653,19 @@
               renderDealsList();
             }
           } else {
-            // Offer to seed
             if (confirm('Connected to empty Supabase tables. Would you like to upload your current deals to the cloud now?')) {
               syncToCloudBtn.click();
             }
           }
         } else {
-          alert('Could not connect to Supabase. Please verify:\n1. Your URL & Anon key are correct.\n2. You ran the SQL script in Supabase SQL editor.');
+          alert('Could not connect to Supabase. Please verify URL and Anon key.');
           updateSupabaseUI();
         }
       });
 
       syncToCloudBtn.addEventListener('click', async () => {
         if (!window.DealNestDB || !window.DealNestDB.isConfigured()) {
-          alert('Please connect your Supabase database first by entering your URL and Anon Key.');
+          alert('Please connect your Supabase database first.');
           return;
         }
         showToast('🚀 Uploading all deals to Supabase...');
@@ -609,7 +740,6 @@
           </div>
         `).join('');
 
-        // Wire delete buttons
         document.querySelectorAll('.remove-deal-btn').forEach(btn => {
           btn.addEventListener('click', () => {
             const idx = parseInt(btn.dataset.idx, 10);
@@ -619,7 +749,6 @@
           });
         });
 
-        // Wire link edits
         document.querySelectorAll('.deal-link-input').forEach(input => {
           input.addEventListener('change', () => {
             const idx = parseInt(input.dataset.idx, 10);
@@ -665,7 +794,6 @@
         renderDealsList();
         persist();
 
-        // Reset inputs
         document.getElementById('newTitle').value = '';
         document.getElementById('newOriginalPrice').value = '';
         document.getElementById('newDealPrice').value = '';
@@ -675,18 +803,19 @@
         document.getElementById('newIsTopPick').checked = false;
       });
 
-      // Initialize
-      updateSupabaseUI();
-      renderDealsList();
+      // Check Session on Start
+      try {
+        const initialSession = await window.DealNestDB.getSession();
+        updateAuthState(initialSession);
+      } catch (e) {
+        updateAuthState(null);
+      }
 
-      // If Supabase already configured, load latest from cloud in background
-      if (window.DealNestDB && window.DealNestDB.isConfigured()) {
-        window.DealNestDB.fetchDeals().then(cloudDeals => {
-          if (cloudDeals && cloudDeals.length > 0) {
-            products = cloudDeals;
-            renderDealsList();
-          }
-        }).catch(() => {});
+      // Listen for auth changes
+      if (window.DealNestDB.onAuthStateChange) {
+        window.DealNestDB.onAuthStateChange((event, session) => {
+          updateAuthState(session);
+        });
       }
     });
   </script>
