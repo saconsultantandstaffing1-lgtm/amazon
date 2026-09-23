@@ -8,10 +8,10 @@
 
 const SUPABASE_STORAGE_KEY = 'dealnest_supabase_config';
 
-// Default static config (Can be overridden via admin panel or direct edit)
+// Default static config (Preconfigured for live site & admin)
 window.SUPABASE_CONFIG = window.SUPABASE_CONFIG || {
-  url: '',
-  anonKey: ''
+  url: 'https://woqpulfstdwxtrxnfrfn.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcXB1bGZzdGR3eHRyeG5mcmZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzc1MjYsImV4cCI6MjEwNTc1MzUyNn0.tiXR4fI3KtMHWR7Iz8rMWqyFYdnEvtCEtOxYmHnKVq4'
 };
 
 // Retrieve active credentials from localStorage or static config
