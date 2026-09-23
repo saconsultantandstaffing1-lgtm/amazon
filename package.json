@@ -1,0 +1,12 @@
+{
+  "name": "dealnest-amazon-hub",
+  "version": "1.0.0",
+  "description": "DealNest - Amazon Affiliate Hub and Link Manager",
+  "scripts": {
+    "dev": "npx -y http-server . -p 8089 -c-1",
+    "start": "npx -y http-server . -p 8089 -c-1"
+  },
+  "keywords": ["amazon", "affiliate", "deals"],
+  "author": "",
+  "license": "ISC"
+}
