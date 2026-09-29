@@ -268,42 +268,38 @@
         <p>Manage product deals, prices, stores, and your Amazon Associates ID</p>
       </div>
       <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <span id="adminUserEmail" style="font-size: 0.85rem; font-weight: 700; color: var(--brand-primary); background: #E8F0EA; padding: 5px 14px; border-radius: 999px; display: none;"></span>
-        <button type="button" id="adminSignOutBtn" class="btn btn-outline btn-sm" style="display: none; color: #DC2626; border-color: #FECACA;">Sign Out</button>
+        <button type="button" id="adminSignOutBtn" class="btn btn-outline btn-sm" style="display: none; color: #DC2626; border-color: #FECACA;">🔒 Lock Admin</button>
         <a href="index.html" class="btn btn-outline" target="_blank">
           🌐 View Live Website &rarr;
         </a>
       </div>
     </header>
 
-    <!-- ADMIN AUTHENTICATION CARD (Displayed when not logged in) -->
-    <div id="authScreen" class="admin-card" style="max-width: 440px; margin: 40px auto; padding: 36px; border-top: 5px solid var(--brand-primary); box-shadow: var(--shadow-md);">
+    <!-- PASSWORD-ONLY AUTHENTICATION CARD -->
+    <div id="authScreen" class="admin-card" style="max-width: 440px; margin: 40px auto; padding: 36px; border-top: 5px solid var(--brand-primary); box-shadow: var(--shadow-md); text-align: center;">
+      <div style="font-size: 2.2rem; margin-bottom: 8px;">🔒</div>
       <div class="card-title" style="font-size: 1.35rem; justify-content: center; margin-bottom: 6px;">
-        🔒 Admin Portal
+        Admin Protection
       </div>
-      <p class="card-desc" style="text-align: center; margin-bottom: 22px;">
-        Sign in to manage product deals, referral links, and tracking tags.
+      <p class="card-desc" style="margin-bottom: 22px;">
+        Enter your admin password to manage deals, affiliate links, and banners.
       </p>
 
-      <div id="authAlert" style="display: none; padding: 12px 14px; border-radius: 8px; font-size: 0.86rem; margin-bottom: 18px; line-height: 1.4;"></div>
+      <div id="authAlert" style="display: none; padding: 12px 14px; border-radius: 8px; font-size: 0.88rem; margin-bottom: 18px; line-height: 1.4;"></div>
 
       <form id="authForm" onsubmit="return false;">
-        <div class="form-group" style="margin-bottom: 18px;">
-          <label for="authEmail">Admin Email</label>
-          <input type="email" id="authEmail" placeholder="admin@example.com" required autocomplete="email">
-        </div>
-        <div class="form-group" style="margin-bottom: 24px;">
-          <label for="authPassword">Password</label>
-          <input type="password" id="authPassword" placeholder="••••••••" required autocomplete="current-password">
+        <div class="form-group" style="margin-bottom: 22px; text-align: left;">
+          <label for="authPassword" style="font-weight: 600; display: block; margin-bottom: 6px;">Admin Password</label>
+          <input type="password" id="authPassword" placeholder="••••••••" required autocomplete="current-password" style="width: 100%; padding: 12px; border: 1.5px solid #CBD5E1; border-radius: 8px; font-size: 1rem;">
         </div>
 
-        <button type="submit" id="authSubmitBtn" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer;">
-          Sign In to Admin
+        <button type="submit" id="authSubmitBtn" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 13px; font-size: 1rem; font-weight: 700; cursor: pointer;">
+          Unlock Dashboard 🔓
         </button>
       </form>
     </div>
 
-    <!-- MAIN ADMIN CONTENT (Hidden until logged in) -->
+    <!-- MAIN ADMIN CONTENT -->
     <div id="adminContent" style="display: none;">
       <!-- SECTION 0: SUPABASE CLOUD DATABASE SYNC -->
       <div class="admin-card" id="supabaseCard" style="border-left: 4px solid #10B981; background: #FAFDFB;">
@@ -467,17 +463,6 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const baseConfig = window.AFFILIATE_CONFIG || { products: [] };
 
-      // Auth Elements
-      const authScreen = document.getElementById('authScreen');
-      const authForm = document.getElementById('authForm');
-      const authEmail = document.getElementById('authEmail');
-      const authPassword = document.getElementById('authPassword');
-      const authSubmitBtn = document.getElementById('authSubmitBtn');
-      const authAlert = document.getElementById('authAlert');
-      const adminContent = document.getElementById('adminContent');
-      const adminUserEmail = document.getElementById('adminUserEmail');
-      const adminSignOutBtn = document.getElementById('adminSignOutBtn');
-
       // Supabase & Admin Elements
       const urlInput = document.getElementById('supabaseUrlInput');
       const keyInput = document.getElementById('supabaseKeyInput');
@@ -485,90 +470,6 @@
       const saveSupabaseBtn = document.getElementById('saveSupabaseBtn');
       const syncToCloudBtn = document.getElementById('syncToCloudBtn');
       const pullFromCloudBtn = document.getElementById('pullFromCloudBtn');
-
-      function showAuthAlert(msg, isSuccess = false) {
-        authAlert.textContent = msg;
-        authAlert.style.display = 'block';
-        if (isSuccess) {
-          authAlert.style.background = '#DEF7EC';
-          authAlert.style.color = '#03543F';
-          authAlert.style.border = '1px solid #BCF0DA';
-        } else {
-          authAlert.style.background = '#FDE8E8';
-          authAlert.style.color = '#9B1C1C';
-          authAlert.style.border = '1px solid #FBD5D5';
-        }
-      }
-
-      function hideAuthAlert() {
-        authAlert.style.display = 'none';
-      }
-
-      // Handle Sign In
-      authForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        hideAuthAlert();
-
-        const email = authEmail.value.trim();
-        const password = authPassword.value;
-
-        if (!email || !password) {
-          showAuthAlert('Please fill in both email and password.');
-          return;
-        }
-
-        authSubmitBtn.disabled = true;
-        authSubmitBtn.textContent = 'Signing in...';
-
-        try {
-          const res = await window.DealNestDB.signIn(email, password);
-          if (res.success) {
-            showAuthAlert('Signed in successfully!', true);
-          } else {
-            showAuthAlert('Sign in failed: ' + (res.error || 'Invalid email or password'));
-          }
-        } catch (err) {
-          showAuthAlert('Authentication error: ' + err.message);
-        } finally {
-          authSubmitBtn.disabled = false;
-          authSubmitBtn.textContent = 'Sign In to Admin';
-        }
-      });
-
-      // Sign Out
-      adminSignOutBtn.addEventListener('click', async () => {
-        if (confirm('Are you sure you want to sign out?')) {
-          await window.DealNestDB.signOut();
-          updateAuthState(null);
-        }
-      });
-
-      // Update UI according to active session
-      function updateAuthState(session) {
-        if (session && session.user) {
-          authScreen.style.display = 'none';
-          adminContent.style.display = 'block';
-          adminUserEmail.textContent = '👤 ' + session.user.email;
-          adminUserEmail.style.display = 'inline-block';
-          adminSignOutBtn.style.display = 'inline-flex';
-
-          updateSupabaseUI();
-          renderDealsList();
-
-          // Refresh deals from cloud
-          window.DealNestDB.fetchDeals().then(cloudDeals => {
-            if (cloudDeals && cloudDeals.length > 0) {
-              products = cloudDeals;
-              renderDealsList();
-            }
-          }).catch(() => {});
-        } else {
-          authScreen.style.display = 'block';
-          adminContent.style.display = 'none';
-          adminUserEmail.style.display = 'none';
-          adminSignOutBtn.style.display = 'none';
-        }
-      }
 
       function updateSupabaseUI() {
         if (!window.DealNestDB) return;
@@ -590,7 +491,13 @@
       function getStorageData() {
         try {
           const saved = localStorage.getItem('blockbuster_admin_data') || localStorage.getItem('smartnest_admin_data');
-          if (saved) return JSON.parse(saved);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed.products)) {
+              parsed.products = parsed.products.filter(p => !p.id || !p.id.startsWith('bb-'));
+            }
+            return parsed;
+          }
         } catch (e) {}
         return {
           amazonTag: baseConfig.amazonTag || 'smartnest-20',
@@ -599,7 +506,7 @@
       }
 
       let adminData = getStorageData();
-      let products = adminData.products && adminData.products.length ? adminData.products : baseConfig.products;
+      let products = Array.isArray(adminData.products) ? adminData.products.filter(p => !p.id || !p.id.startsWith("bb-")) : [];
 
       // Populate Tag
       const tagInput = document.getElementById('tagInput');
@@ -718,7 +625,18 @@
         const container = document.getElementById('dealsContainer');
         document.getElementById('dealCount').textContent = products.length;
 
-        container.innerHTML = products.map((item, idx) => `
+        if (!products.length) {
+          container.innerHTML = \`
+            <div style="text-align: center; padding: 40px 20px; color: var(--text-muted); background: #FAF9F6; border-radius: 12px; border: 2px dashed #CBD5E1; width: 100%;">
+              <div style="font-size: 2.2rem; margin-bottom: 10px;">📦</div>
+              <h4 style="margin-bottom: 6px; font-weight: 700; color: var(--brand-primary); font-size: 1.1rem;">No Products in Catalog</h4>
+              <p style="font-size: 0.88rem;">Use the form below to add your first deal.</p>
+            </div>
+          \`;
+          return;
+        }
+
+        container.innerHTML = products.map((item, idx) => \`
           <div class="deal-item-row" data-idx="${idx}">
             <img src="${item.image}" alt="${item.title}" class="deal-thumb">
             <div class="deal-info">
@@ -803,20 +721,75 @@
         document.getElementById('newIsTopPick').checked = false;
       });
 
-      // Check Session on Start
-      try {
-        const initialSession = await window.DealNestDB.getSession();
-        updateAuthState(initialSession);
-      } catch (e) {
-        updateAuthState(null);
+      // ==========================================
+      // PASSWORD-ONLY AUTHENTICATION LOGIC
+      // ==========================================
+      const ADMIN_PASS = 'saconsultantandstaffing1';
+      const AUTH_KEY = 'dealnest_admin_auth_unlocked';
+
+      const authScreen = document.getElementById('authScreen');
+      const authForm = document.getElementById('authForm');
+      const authPassword = document.getElementById('authPassword');
+      const authAlert = document.getElementById('authAlert');
+      const adminContent = document.getElementById('adminContent');
+      const adminSignOutBtn = document.getElementById('adminSignOutBtn');
+
+      function checkAuth() {
+        const isAuthed = sessionStorage.getItem(AUTH_KEY) === 'true';
+        if (isAuthed) {
+          authScreen.style.display = 'none';
+          adminContent.style.display = 'block';
+          adminSignOutBtn.style.display = 'inline-flex';
+          updateSupabaseUI();
+          renderDealsList();
+
+          // Refresh deals from cloud in background
+          if (window.DealNestDB && window.DealNestDB.isConfigured()) {
+            window.DealNestDB.fetchDeals().then(cloudDeals => {
+              if (cloudDeals && cloudDeals.length > 0) {
+                products = cloudDeals;
+                renderDealsList();
+              }
+            }).catch(() => {});
+          }
+        } else {
+          authScreen.style.display = 'block';
+          adminContent.style.display = 'none';
+          adminSignOutBtn.style.display = 'none';
+          authPassword.value = '';
+          setTimeout(() => authPassword.focus(), 150);
+        }
       }
 
-      // Listen for auth changes
-      if (window.DealNestDB.onAuthStateChange) {
-        window.DealNestDB.onAuthStateChange((event, session) => {
-          updateAuthState(session);
-        });
-      }
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const entered = authPassword.value.trim();
+        if (entered === ADMIN_PASS) {
+          authAlert.style.display = 'none';
+          sessionStorage.setItem(AUTH_KEY, 'true');
+          checkAuth();
+          showToast('✅ Welcome! Admin Dashboard unlocked.');
+        } else {
+          authAlert.textContent = '❌ Incorrect password. Please try again.';
+          authAlert.style.display = 'block';
+          authAlert.style.background = '#FDE8E8';
+          authAlert.style.color = '#9B1C1C';
+          authAlert.style.border = '1px solid #FBD5D5';
+          authPassword.value = '';
+          authPassword.focus();
+        }
+      });
+
+      adminSignOutBtn.addEventListener('click', () => {
+        if (confirm('Lock admin panel?')) {
+          sessionStorage.removeItem(AUTH_KEY);
+          checkAuth();
+          showToast('🔒 Admin session locked.');
+        }
+      });
+
+      // Check auth on load
+      checkAuth();
     });
   </script>
 </body>

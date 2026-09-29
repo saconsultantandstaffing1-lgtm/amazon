@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
           amazonTag: parsed.amazonTag || baseConfig.amazonTag,
           siteName: parsed.siteName || baseConfig.siteName,
           tagline: parsed.tagline || baseConfig.tagline,
-          products: (parsed.products && parsed.products.length) ? parsed.products : baseConfig.products
+          products: Array.isArray(parsed.products) ? parsed.products.filter(p => !p.id || !p.id.startsWith("bb-")) : []
         };
       }
     } catch (e) {
@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
           hasUpdates = true;
         }
 
-        if (cloudDeals && cloudDeals.length > 0) {
-          config.products = cloudDeals;
+        if (Array.isArray(cloudDeals)) {
+          config.products = cloudDeals.filter(p => !p.id || !p.id.startsWith("bb-"));
           hasUpdates = true;
         }
 
@@ -255,11 +255,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollLeftBtn = document.getElementById('topPicksScrollLeft');
     const scrollRightBtn = document.getElementById('topPicksScrollRight');
     const slider = document.getElementById('topPicksSlider');
+    const section = document.getElementById('topPicksSection');
     if (!track) return;
 
     const topPickItems = config.products.filter(p => p.isTopPick);
     const itemsToRender = topPickItems.length ? topPickItems : config.products.slice(0, 6);
 
+    if (section) {
+      section.style.display = itemsToRender.length ? 'block' : 'none';
+    }
     track.innerHTML = itemsToRender.map(createDealCardHtml).join('');
 
     if (scrollLeftBtn && slider) {
