@@ -287,7 +287,7 @@
 
       <div id="authAlert" style="display: none; padding: 12px 14px; border-radius: 8px; font-size: 0.88rem; margin-bottom: 18px; line-height: 1.4;"></div>
 
-      <form id="authForm" onsubmit="return false;">
+      <form id="authForm">
         <div class="form-group" style="margin-bottom: 22px; text-align: left;">
           <label for="authPassword" style="font-weight: 600; display: block; margin-bottom: 6px;">Admin Password</label>
           <input type="password" id="authPassword" placeholder="••••••••" required autocomplete="current-password" style="width: 100%; padding: 12px; border: 1.5px solid #CBD5E1; border-radius: 8px; font-size: 1rem;">
@@ -626,17 +626,19 @@
         document.getElementById('dealCount').textContent = products.length;
 
         if (!products.length) {
-          container.innerHTML = \`
+          container.innerHTML = `
+
             <div style="text-align: center; padding: 40px 20px; color: var(--text-muted); background: #FAF9F6; border-radius: 12px; border: 2px dashed #CBD5E1; width: 100%;">
               <div style="font-size: 2.2rem; margin-bottom: 10px;">📦</div>
               <h4 style="margin-bottom: 6px; font-weight: 700; color: var(--brand-primary); font-size: 1.1rem;">No Products in Catalog</h4>
               <p style="font-size: 0.88rem;">Use the form below to add your first deal.</p>
             </div>
-          \`;
+          `;
           return;
         }
 
-        container.innerHTML = products.map((item, idx) => \`
+        container.innerHTML = products.map((item, idx) => `
+
           <div class="deal-item-row" data-idx="${idx}">
             <img src="${item.image}" alt="${item.title}" class="deal-thumb">
             <div class="deal-info">
@@ -761,8 +763,7 @@
         }
       }
 
-      authForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+      function doUnlock() {
         const entered = authPassword.value.trim();
         if (entered === ADMIN_PASS) {
           authAlert.style.display = 'none';
@@ -777,6 +778,23 @@
           authAlert.style.border = '1px solid #FBD5D5';
           authPassword.value = '';
           authPassword.focus();
+        }
+      }
+
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        doUnlock();
+      });
+
+      authSubmitBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        doUnlock();
+      });
+
+      authPassword.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          doUnlock();
         }
       });
 
