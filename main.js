@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (hasUpdates) {
-          if (typeof initTopPicksSlider === 'function') initTopPicksSlider();
+          if (typeof initTopPicks === 'function') initTopPicks();
           if (typeof renderDealsGrid === 'function') renderDealsGrid();
         }
       } catch (err) {
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <a href="${affiliateUrl}" target="_blank" rel="sponsored noopener nofollow" class="deal-card" data-id="${item.id}" data-category="${item.category}" aria-label="View deal for ${item.title}">
         <div class="deal-image-box">
           ${badgeHtml}
-          <img src="${item.image}" alt="${item.title}" loading="lazy">
+          <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=400&q=80';">
         </div>
         <div class="deal-details-box">
           <h3 class="deal-title" title="${item.title}">${item.title}</h3>

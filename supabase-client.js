@@ -261,7 +261,9 @@ async function syncAllDealsToSupabase(products, amazonTag) {
         .map(r => r.id)
         .filter(id => !activeIds.includes(id));
       if (toDeleteIds.length > 0) {
-        await client.from('deals').delete().in('id', toDeleteIds);
+        for (const delId of toDeleteIds) {
+          await client.from('deals').delete().eq('id', delId);
+        }
       }
     }
 

@@ -644,8 +644,8 @@
 
         container.innerHTML = products.map((item, idx) => `
 
-          <div class="deal-item-row" data-idx="${idx}">
-            <img src="${item.image}" alt="${item.title}" class="deal-thumb">
+          <div class="deal-item-row" data-id="${item.id}" data-idx="${idx}">
+            <img src="${item.image}" alt="${item.title}" class="deal-thumb" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=120&q=80';">
             <div class="deal-info">
               <h4>${item.title}</h4>
               <div class="deal-meta-text">
@@ -654,10 +654,11 @@
                 • Store: <span class="store">${item.store || 'Amazon'}</span>
                 • Category: <strong>${item.category}</strong>
                 ${item.isTopPick ? ' • <span style="color:var(--brand-primary); font-weight:700;">★ Top Pick</span>' : ''}
+                <span style="color: #64748B; font-size: 0.75rem; margin-left: 6px;">(ID: ${item.id})</span>
               </div>
               <div style="display: flex; gap: 8px;">
-                <input type="url" class="deal-link-input" data-idx="${idx}" value="${item.affiliateUrl || ''}" placeholder="https://amzn.to/..." style="font-size:0.82rem; padding: 6px 10px;">
-                <button type="button" class="btn btn-outline btn-sm remove-deal-btn" data-idx="${idx}" style="color: #B91C1C; border-color: #FECACA;">
+                <input type="url" class="deal-link-input" data-id="${item.id}" data-idx="${idx}" value="${item.affiliateUrl || ''}" placeholder="https://amzn.to/..." style="font-size:0.82rem; padding: 6px 10px;">
+                <button type="button" class="btn btn-outline btn-sm remove-deal-btn" data-id="${item.id}" data-idx="${idx}" style="color: #B91C1C; border-color: #FECACA;">
                   Delete
                 </button>
               </div>
@@ -666,29 +667,76 @@
         `).join('');
 
         document.querySelectorAll('.remove-deal-btn').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const idx = parseInt(btn.dataset.idx, 10);
-            const toDelete = products[idx];
-            if (!toDelete) return;
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-            if (!confirm(`Are you sure you want to delete "${toDelete.title}"?`)) {
+            const dealId = btn.getAttribute('data-id');
+            const idx = parseInt(btn.getAttribute('data-idx'), 10);
+
+            // Find target deal by ID first, fallback to index
+            let targetIdx = -1;
+            if (dealId) {
+              targetIdx = products.findIndex(p => String(p.id) === String(dealId));
+            }
+            if (targetIdx === -1 && !isNaN(idx)) {
+              targetIdx = idx;
+            }
+            if (targetIdx === -1 || !products[targetIdx]) return;
+
+            const toDelete = products[targetIdx];
+            const delTitle = toDelete.title || 'Product';
+
+            // Two-click confirm without native window.confirm() popup
+            if (!btn.classList.contains('confirming')) {
+              btn.classList.add('confirming');
+              btn.textContent = '⚠️ Confirm?';
+              btn.style.background = '#DC2626';
+              btn.style.color = '#FFFFFF';
+              btn.style.borderColor = '#DC2626';
+              setTimeout(() => {
+                if (btn && btn.parentNode) {
+                  btn.classList.remove('confirming');
+                  btn.textContent = 'Delete';
+                  btn.style.background = '';
+                  btn.style.color = '#B91C1C';
+                  btn.style.borderColor = '#FECACA';
+                }
+              }, 4000);
               return;
             }
 
-            products.splice(idx, 1);
-            renderDealsList();
+            // 1. Remove from local array
+            products.splice(targetIdx, 1);
 
+            // 2. Persist to localStorage immediately
+            adminData.amazonTag = tagInput.value.trim();
+            adminData.products = products;
+            localStorage.setItem('blockbuster_admin_data', JSON.stringify(adminData));
+            localStorage.setItem('smartnest_admin_data', JSON.stringify(adminData));
+
+            // 3. Immediately re-render UI
+            renderDealsList();
+            showToast(`🗑️ Deleting "${delTitle}"...`);
+
+            // 4. Delete directly from Supabase Cloud
             if (toDelete.id && window.DealNestDB && window.DealNestDB.isConfigured()) {
-              showToast(`🗑️ Deleting "${toDelete.title}" from Supabase Cloud...`);
-              const delRes = await window.DealNestDB.deleteDeal(toDelete.id);
-              if (delRes.success) {
-                showToast(`✅ "${toDelete.title}" permanently deleted from Cloud & Store!`);
-              } else {
-                showToast(`⚠️ Cloud delete warning: ${delRes.error}`);
+              try {
+                const delRes = await window.DealNestDB.deleteDeal(toDelete.id);
+                if (delRes && delRes.success) {
+                  showToast(`✅ "${delTitle}" permanently deleted from Cloud & Store!`);
+                } else {
+                  console.warn('Direct delete warning:', delRes);
+                }
+              } catch (delErr) {
+                console.error('Delete deal exception:', delErr);
               }
             }
 
-            await persist();
+            // 5. Full sync to ensure cloud database matches exactly
+            if (window.DealNestDB && window.DealNestDB.isConfigured()) {
+              await window.DealNestDB.syncAllDeals(products, adminData.amazonTag);
+            }
           });
         });
 
