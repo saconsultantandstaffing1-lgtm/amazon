@@ -523,6 +523,7 @@
         adminData.amazonTag = tagInput.value.trim();
         adminData.products = products;
         localStorage.setItem('blockbuster_admin_data', JSON.stringify(adminData));
+        localStorage.setItem('smartnest_admin_data', JSON.stringify(adminData));
 
         if (window.DealNestDB && window.DealNestDB.isConfigured()) {
           showToast('⏳ Syncing to Supabase Cloud...');
@@ -599,7 +600,11 @@
           products = cloudDeals;
           if (cloudSettings && cloudSettings.amazon_tag) {
             tagInput.value = cloudSettings.amazon_tag;
+            adminData.amazonTag = cloudSettings.amazon_tag;
           }
+          adminData.products = cloudDeals;
+          localStorage.setItem('blockbuster_admin_data', JSON.stringify(adminData));
+          localStorage.setItem('smartnest_admin_data', JSON.stringify(adminData));
           renderDealsList();
           showToast(`✅ Loaded ${cloudDeals.length} deals from Supabase Cloud!`);
         } else {
@@ -661,11 +666,29 @@
         `).join('');
 
         document.querySelectorAll('.remove-deal-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
+          btn.addEventListener('click', async () => {
             const idx = parseInt(btn.dataset.idx, 10);
+            const toDelete = products[idx];
+            if (!toDelete) return;
+
+            if (!confirm(`Are you sure you want to delete "${toDelete.title}"?`)) {
+              return;
+            }
+
             products.splice(idx, 1);
             renderDealsList();
-            persist();
+
+            if (toDelete.id && window.DealNestDB && window.DealNestDB.isConfigured()) {
+              showToast(`🗑️ Deleting "${toDelete.title}" from Supabase Cloud...`);
+              const delRes = await window.DealNestDB.deleteDeal(toDelete.id);
+              if (delRes.success) {
+                showToast(`✅ "${toDelete.title}" permanently deleted from Cloud & Store!`);
+              } else {
+                showToast(`⚠️ Cloud delete warning: ${delRes.error}`);
+              }
+            }
+
+            await persist();
           });
         });
 
@@ -748,8 +771,11 @@
           // Refresh deals from cloud in background
           if (window.DealNestDB && window.DealNestDB.isConfigured()) {
             window.DealNestDB.fetchDeals().then(cloudDeals => {
-              if (cloudDeals && cloudDeals.length > 0) {
+              if (Array.isArray(cloudDeals)) {
                 products = cloudDeals;
+                adminData.products = cloudDeals;
+                localStorage.setItem('blockbuster_admin_data', JSON.stringify(adminData));
+                localStorage.setItem('smartnest_admin_data', JSON.stringify(adminData));
                 renderDealsList();
               }
             }).catch(() => {});

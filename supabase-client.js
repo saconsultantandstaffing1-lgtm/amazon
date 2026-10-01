@@ -175,6 +175,25 @@ async function saveDealToSupabase(deal) {
   }
 }
 
+// Delete an individual deal by ID from Supabase
+async function deleteDealFromSupabase(dealId) {
+  const client = getSupabaseClient();
+  if (!client) return { success: false, error: 'Supabase not connected' };
+
+  try {
+    const { data, error } = await client
+      .from('deals')
+      .delete()
+      .eq('id', dealId);
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (err) {
+    console.error('Failed to delete deal from Supabase:', err);
+    return { success: false, error: err.message };
+  }
+}
+
 // Save or update a site setting
 async function saveSettingToSupabase(key, value) {
   const client = getSupabaseClient();
@@ -226,11 +245,26 @@ async function syncAllDealsToSupabase(products, amazonTag) {
       updated_at: new Date().toISOString()
     }));
 
-    const { data, error } = await client
-      .from('deals')
-      .upsert(rows, { onConflict: 'id' });
+    if (rows.length > 0) {
+      const { data, error } = await client
+        .from('deals')
+        .upsert(rows, { onConflict: 'id' });
 
-    if (error) throw error;
+      if (error) throw error;
+    }
+
+    // 3. Remove obsolete/deleted deals from Supabase that are no longer in the active products list
+    const activeIds = products.map(p => p.id).filter(Boolean);
+    const { data: existingRows, error: fetchErr } = await client.from('deals').select('id');
+    if (!fetchErr && Array.isArray(existingRows)) {
+      const toDeleteIds = existingRows
+        .map(r => r.id)
+        .filter(id => !activeIds.includes(id));
+      if (toDeleteIds.length > 0) {
+        await client.from('deals').delete().in('id', toDeleteIds);
+      }
+    }
+
     return { success: true, count: rows.length };
   } catch (err) {
     console.error('Error syncing all deals to Supabase:', err);
@@ -317,6 +351,7 @@ window.DealNestDB = {
   fetchDeals: fetchDealsFromSupabase,
   fetchSettings: fetchSettingsFromSupabase,
   saveDeal: saveDealToSupabase,
+  deleteDeal: deleteDealFromSupabase,
   saveSetting: saveSettingToSupabase,
   syncAllDeals: syncAllDealsToSupabase,
   // Auth
